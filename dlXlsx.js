@@ -1,28 +1,27 @@
 // 由写死的数据生成xlsx文件
-let XLSX = require('xlsx');
-const dlXlsx = () => {
-    var _headers = ['id', 'name', 'age', 'country']
-    var _data = [{
-        id: '1',
-        name: 'test1',
-        age: '30',
-        country: 'China',
-    },
-    {
-        id: '2',
-        name: 'test2',
-        age: '20',
-        country: 'America',
-    },
-    {
-        id: '3',
-        name: 'test3',
-        age: '18',
-        country: 'UK',
-    }];
+const XLSX = require('xlsx');
+const _headers = ['id', 'name', 'age', 'country'];
+const _data = [{
+    id: '1',
+    name: 'test1',
+    age: '30',
+    country: 'China',
+},
+{
+    id: '2',
+    name: 'test2',
+    age: '20',
+    country: 'America',
+},
+{
+    id: '3',
+    name: 'test3',
+    age: '18',
+    country: 'UK',
+}];
 
-    var headers = _headers
-        
+const dlXlsx = () => {
+    const headers = _headers
         .map((v, i) => Object.assign({}, { v: v, position: String.fromCharCode(65 + i) + 1 }))
         // 为 _headers 添加对应的单元格位置
         // [ { v: 'id', position: 'A1' },
@@ -36,8 +35,7 @@ const dlXlsx = () => {
         //   C1: { v: 'age' },
         //   D1: { v: 'country' },
 
-    var data = _data
-
+    const data = _data
         .map((v, i) => _headers.map((k, j) => Object.assign({}, { v: v[k], position: String.fromCharCode(65 + j) + (i + 2) })))
         // 匹配 headers 的位置，生成对应的单元格数据
         // [ [ { v: '1', position: 'A2' },
@@ -81,14 +79,14 @@ const dlXlsx = () => {
         //     C4: { v: '18' },
         //     D4: { v: 'Unkonw' }
     // 合并 headers 和 data
-    var output = Object.assign({}, headers, data);
+    const output = Object.assign({}, headers, data);
     // 获取所有单元格的位置
-    var outputPos = Object.keys(output);
+    const outputPos = Object.keys(output);
     // 计算出范围
-    var ref = outputPos[0] + ':' + outputPos[outputPos.length - 1];
+    const ref = outputPos[0] + ':' + outputPos[outputPos.length - 1];
 
     // 构建 workbook 对象
-    var wb = {
+    const workbook = {
         SheetNames: ['mySheet'],
         Sheets: {
             'mySheet': Object.assign({}, output, { '!ref': ref })
@@ -96,7 +94,7 @@ const dlXlsx = () => {
     };
    
     // 导出 Excel
-    XLSX.writeFile(wb, 'output.xlsx')
+    XLSX.writeFile(workbook, 'output.xlsx')
 }
 
 module.exports = dlXlsx;
