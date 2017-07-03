@@ -40,7 +40,7 @@ workbook是一个对象，结构如下：
 ### node 服务
 node服务文件index，一个简单的页面渲染和下载请求处理。
 
-```
+```javascript
 const Koa = require('koa');
 const Router = require('koa-router');
 const fs = require('fs');
@@ -79,7 +79,7 @@ node服务基于koa2框架，node>=7.8，可以直接食用async和await处理�
 ### xlsx生成处理
 xlsx生成在dlXlsx.js中处理
 
-```
+```javascript
 //dlXlsx.js
 const XLSX = require('xlsx');
 //表头
