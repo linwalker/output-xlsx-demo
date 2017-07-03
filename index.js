@@ -3,7 +3,7 @@ const Router = require('koa-router');
 const fs = require('fs');
 const path =require('path');
 const views = require('koa-views');
-
+const dlXlsx = require('./dlXlsx.js');
 const app = new Koa();
 const router = new Router();
 
@@ -11,72 +11,19 @@ app.use(views(path.join(__dirname, './views'), {
     extension: 'html'
 }))
 
-let XLSX = require('xlsx');
-const dlXlsx = () => {
-    var _headers = ['id', 'name', 'age', 'country', 'remark']
-    var _data = [{
-        id: '1',
-        name: 'test1',
-        age: '30',
-        country: 'China',
-        remark: 'hello'
-    },
-    {
-        id: '2',
-        name: 'test2',
-        age: '20',
-        country: 'America',
-        remark: 'world'
-    },
-    {
-        id: '3',
-        name: 'test3',
-        age: '18',
-        country: 'Unkonw',
-        remark: '???'
-    }];
 
-    var headers = _headers
-        
-        .map((v, i) => Object.assign({}, { v: v, position: String.fromCharCode(65 + i) + 1 }))
-
-        .reduce((prev, next) => Object.assign({}, prev, { [next.position]: { v: next.v } }), {});
-
-    var data = _data
-
-        .map((v, i) => _headers.map((k, j) => Object.assign({}, { v: v[k], position: String.fromCharCode(65 + j) + (i + 2) })))
-        
-        .reduce((prev, next) => prev.concat(next))
-
-        .reduce((prev, next) => Object.assign({}, prev, { [next.position]: { v: next.v } }), {});
-
-    // 合并 headers 和 data
-    var output = Object.assign({}, headers, data);
-    // 获取所有单元格的位置
-    var outputPos = Object.keys(output);
-    // 计算出范围
-    var ref = outputPos[0] + ':' + outputPos[outputPos.length - 1];
-
-    // 构建 workbook 对象
-    var wb = {
-        SheetNames: ['mySheet'],
-        Sheets: {
-            'mySheet': Object.assign({}, output, { '!ref': ref })
-        }
-    };
-   
-    // 导出 Excel
-    XLSX.writeFile(wb, 'output.xlsx')
-}
 router.get('/', async (ctx) => {
     await ctx.render('main');
 })
 router.get('/download', async (ctx) => {
+    //生成xlsx文件
     await dlXlsx();
+    //类型
     ctx.type = '.xlsx';
+    //请求返回，生成的xlsx文件
     ctx.body = fs.readFileSync('output.xlsx');
+    //请求返回后，删除生成的xlsx文件，不删除也行，下次请求回覆盖
     fs.unlink('output.xlsx');
-    console.log('delete');
 })
 // 加载路由中间件
 app.use(router.routes()).use(router.allowedMethods())
