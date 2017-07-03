@@ -1,8 +1,15 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const fs = require('fs');
+const path =require('path');
+const views = require('koa-views');
+
 const app = new Koa();
 const router = new Router();
+
+app.use(views(path.join(__dirname, './views'), {
+    extension: 'html'
+}))
 
 let XLSX = require('xlsx');
 const dlXlsx = () => {
@@ -62,10 +69,9 @@ const dlXlsx = () => {
     XLSX.writeFile(wb, 'output.xlsx')
 }
 router.get('/', async (ctx) => {
-    ctx.body = 'output-xslx-demo';
+    await ctx.render('main');
 })
 router.get('/download', async (ctx) => {
-    // ctx.body = 'download';
     await dlXlsx();
     ctx.type = '.xlsx';
     ctx.body = fs.readFileSync('output.xlsx');
